@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta property="og:image" content="ico2.jpg"> 
+<meta property="og:image" content="ico.jpg">
 <title>Музыкальная Видео Сборка</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -103,7 +103,7 @@ body{padding-bottom:90px}
 <div class="container">
     <div class="video-section">
         <div class="video-cover">
-            <video class="video-player" id="videoPlayer" preload="auto" playsinline>
+            <video class="video-player" id="videoPlayer" preload="auto" playsinline crossorigin="anonymous">
                 <source src="https://dl.dropboxusercontent.com/scl/fi/a2levgww7tconqpd4xudx/videoplayback.mp4?rlkey=jyhd6uw1baoqj8j1nyvztvim7" type="video/mp4">
             </video>
         </div>
@@ -175,6 +175,23 @@ const currentTrackInfo=document.getElementById('currentTrackInfo');
 
 let currentTrack=0;
 let isPlaying=false;
+let isBuffering=false;
+
+video.addEventListener('waiting',()=>{
+  isBuffering=true;
+  playPauseBtn.textContent='⏳';
+});
+
+video.addEventListener('canplay',()=>{
+  isBuffering=false;
+  if(isPlaying){
+    playPauseBtn.textContent='⏸';
+  }
+});
+
+video.addEventListener('loadeddata',()=>{
+  isBuffering=false;
+});
 
 function formatTime(s){
   const m=Math.floor(s/60);
@@ -232,7 +249,12 @@ document.querySelectorAll('.track').forEach(el=>{
 
 function playTrack(index){
   currentTrack=index;
-  video.currentTime=tracks[index].sec;
+  const targetTime=tracks[index].sec;
+  
+  if(Math.abs(video.currentTime-targetTime)>2){
+    video.currentTime=targetTime;
+  }
+  
   play();
   updateActiveTrack();
   updateTrackInfo();
@@ -240,10 +262,23 @@ function playTrack(index){
 }
 
 function play(){
-  video.play();
-  isPlaying=true;
-  playPauseBtn.textContent='⏸';
-  updateActiveTrack();
+  const playPromise=video.play();
+  
+  if(playPromise!==undefined){
+    playPromise.then(()=>{
+      isPlaying=true;
+      playPauseBtn.textContent='⏸';
+      updateActiveTrack();
+    }).catch(error=>{
+      console.log('Playback prevented:',error);
+      isPlaying=false;
+      playPauseBtn.textContent='▶';
+    });
+  }else{
+    isPlaying=true;
+    playPauseBtn.textContent='⏸';
+    updateActiveTrack();
+  }
 }
 
 function pause(){
@@ -312,23 +347,23 @@ video.addEventListener('timeupdate',()=>{
   currentTimeEl.textContent=formatTime(currentTrackTime);
   totalTimeEl.textContent=formatTime(trackDuration);
   
-  for(let i=tracks.length-1;i>=0;i--){
-    if(video.currentTime>=tracks[i].sec){
-      if(currentTrack!==i){
-        currentTrack=i;
-        updateActiveTrack();
-        updateTrackInfo();
-        updateNavigationButtons();
-      }
-      break;
-    }
-  }
-  
-  if(currentTrack<tracks.length-1&&video.currentTime>=tracks[currentTrack+1].sec){
+  if(currentTrack<tracks.length-1&&video.currentTime>=(tracks[currentTrack+1].sec-0.1)){
     currentTrack++;
     updateActiveTrack();
     updateTrackInfo();
     updateNavigationButtons();
+  }else{
+    for(let i=tracks.length-1;i>=0;i--){
+      if(video.currentTime>=(tracks[i].sec-0.1)){
+        if(currentTrack!==i){
+          currentTrack=i;
+          updateActiveTrack();
+          updateTrackInfo();
+          updateNavigationButtons();
+        }
+        break;
+      }
+    }
   }
 });
 
