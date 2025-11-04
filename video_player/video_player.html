@@ -1,0 +1,427 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:image" content="ico.jpg">
+<title>Музыкальная Видео Сборка</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Arial',sans-serif;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f1419 100%);color:#fff;min-height:100vh;overflow-x:hidden;padding-bottom:120px}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.video-section{text-align:center;margin-bottom:50px}
+.video-cover{width:800px;height:450px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);background:linear-gradient(45deg,#667eea,#764ba2,#f093fb);animation:videoGlow 3s ease-in-out infinite alternate;position:relative}
+@keyframes videoGlow{0%{box-shadow:0 20px 60px rgba(102,126,234,0.3)}100%{box-shadow:0 30px 80px rgba(240,147,251,0.5)}}
+.video-player{width:100%;height:100%;object-fit:contain;background:#000}
+.video-info{margin-top:20px}
+.video-title{font-size:2.5em;font-weight:bold;background:linear-gradient(45deg,#667eea,#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.current-track-info{font-size:1.1em;color:rgba(255,255,255,0.7);margin-top:5px}
+.playlist{background:rgba(255,255,255,0.05);border-radius:20px;padding:30px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1)}
+.track{display:flex;align-items:center;padding:15px;margin-bottom:15px;background:rgba(255,255,255,0.03);border-radius:15px;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden}
+.track:hover{background:rgba(255,255,255,0.08);transform:translateX(10px)}
+.track.playing{background:linear-gradient(90deg,rgba(102,126,234,0.2),rgba(240,147,251,0.2));border:1px solid rgba(102,126,234,0.5)}
+.track-number{width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:20px;font-weight:bold;transition:all .3s ease}
+.track.playing .track-number{background:linear-gradient(45deg,#667eea,#f093fb);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+.track-info{flex:1}
+.track-title{font-size:1.2em;margin-bottom:5px}
+.track-time{color:rgba(255,255,255,0.6);font-size:.9em}
+.track-duration{color:rgba(255,255,255,0.6);font-size:.9em}
+.playing-indicator{display:none;margin-left:20px}
+.track.playing .playing-indicator{display:flex;align-items:flex-end;height:20px;gap:2px}
+.bar{width:3px;background:linear-gradient(to top,#667eea,#f093fb);border-radius:3px;animation:soundWave .5s ease-in-out infinite}
+.bar:nth-child(1){animation-delay:0s;height:10px}
+.bar:nth-child(2){animation-delay:.1s;height:20px}
+.bar:nth-child(3){animation-delay:.2s;height:15px}
+.bar:nth-child(4){animation-delay:.3s;height:18px}
+.bar:nth-child(5){animation-delay:.4s;height:12px}
+@keyframes soundWave{0%,100%{transform:scaleY(0.5)}50%{transform:scaleY(1)}}
+.paused .playing-indicator .bar{animation-play-state:paused}
+.player-controls-wrapper{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,35,0.98);backdrop-filter:blur(20px);border-top:1px solid rgba(102,126,234,0.2);padding:12px 20px;z-index:1000;box-shadow:0 -10px 40px rgba(0,0,0,0.3)}
+.controls-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:15px}
+.control-btns{display:flex;gap:10px;flex-shrink:0}
+.control-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;font-size:1.1em}
+.control-btn:hover{background:rgba(255,255,255,0.2);transform:scale(1.05)}
+.control-btn:active{transform:scale(0.95)}
+.control-btn:disabled{opacity:0.3;cursor:not-allowed}
+.control-btn:disabled:hover{transform:scale(1);background:rgba(255,255,255,0.1)}
+.play-btn{width:50px;height:50px;border-radius:50%;background:linear-gradient(45deg,#667eea,#f093fb);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;font-size:1.3em;flex-shrink:0}
+.play-btn:hover{transform:scale(1.1);box-shadow:0 5px 20px rgba(102,126,234,0.5)}
+.play-btn:active{transform:scale(0.95)}
+.progress-container{flex:1;min-width:0}
+.time-display{display:flex;justify-content:space-between;color:rgba(255,255,255,0.5);font-size:.8em;margin-bottom:6px;font-family:monospace}
+.progress-bar{width:100%;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;cursor:pointer;position:relative}
+.progress{height:100%;background:linear-gradient(90deg,#667eea,#f093fb);border-radius:3px;width:0%;transition:width .1s ease;position:relative}
+.progress::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:11px;height:11px;background:#fff;border-radius:50%;box-shadow:0 0 10px rgba(102,126,234,0.7)}
+.volume-control{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.volume-icon{font-size:1.1em;color:rgba(255,255,255,0.6);cursor:pointer;user-select:none}
+.volume-slider{width:100px;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;cursor:pointer;-webkit-appearance:none;appearance:none}
+.volume-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 0 8px rgba(102,126,234,0.6)}
+.volume-slider::-moz-range-thumb{width:13px;height:13px;background:#fff;border-radius:50%;cursor:pointer;border:none;box-shadow:0 0 8px rgba(102,126,234,0.6)}
+@media (max-width:1024px){
+.video-cover{width:600px;height:337px}
+}
+@media (max-width:768px){
+.container{padding:10px}
+body{padding-bottom:100px}
+.video-cover{width:100%;max-width:500px;height:280px}
+.video-title{font-size:1.8em}
+.current-track-info{font-size:1em}
+.playlist{padding:15px}
+.track{padding:10px;margin-bottom:10px}
+.track-number{width:35px;height:35px;margin-right:15px;font-size:0.9em}
+.track-title{font-size:1em}
+.track-time,.track-duration{font-size:0.8em}
+.player-controls-wrapper{padding:10px 15px}
+.controls-content{gap:10px}
+.control-btn{width:36px;height:36px;font-size:1em}
+.play-btn{width:45px;height:45px;font-size:1.2em}
+.volume-slider{width:80px}
+.time-display{font-size:0.75em}
+}
+@media (max-width:480px){
+body{padding-bottom:90px}
+.video-cover{height:auto;aspect-ratio:16/9}
+.video-title{font-size:1.5em}
+.current-track-info{font-size:0.9em}
+.track{flex-wrap:wrap}
+.track-info{min-width:calc(100% - 60px)}
+.track-duration{margin-left:55px;margin-top:5px}
+.playing-indicator{margin-left:0;margin-top:5px}
+.player-controls-wrapper{padding:8px 10px}
+.controls-content{gap:8px}
+.control-btn{width:32px;height:32px;font-size:0.95em}
+.play-btn{width:40px;height:40px;font-size:1.1em}
+.volume-control{gap:6px}
+.volume-slider{width:60px;height:4px}
+.volume-slider::-webkit-slider-thumb{width:11px;height:11px}
+.volume-slider::-moz-range-thumb{width:11px;height:11px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="video-section">
+        <div class="video-cover">
+            <video class="video-player" id="videoPlayer" preload="auto" playsinline crossorigin="anonymous">
+                <source src="https://dl.dropboxusercontent.com/scl/fi/a2levgww7tconqpd4xudx/videoplayback.mp4?rlkey=jyhd6uw1baoqj8j1nyvztvim7" type="video/mp4">
+            </video>
+        </div>
+        <div class="video-info">
+            <h1 class="video-title">Музыкальная Видео Сборка</h1>
+            <p class="current-track-info" id="currentTrackInfo">Христианские песни</p>
+        </div>
+    </div>
+
+    <div class="playlist" id="playlist"></div>
+</div>
+
+<div class="player-controls-wrapper">
+    <div class="controls-content">
+        <div class="control-btns">
+            <button class="control-btn" id="prevBtn">⏮</button>
+            <button class="play-btn" id="playPauseBtn">▶</button>
+            <button class="control-btn" id="nextBtn">⏭</button>
+        </div>
+        
+        <div class="progress-container">
+            <div class="time-display">
+                <span id="currentTime">0:00</span>
+                <span id="totalTime">0:00</span>
+            </div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="volume-control">
+            <span class="volume-icon" id="volumeIcon">🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80">
+        </div>
+    </div>
+</div>
+
+<script>
+const tracks=[
+  {title:"Будь благословен",time:"0:00:00",sec:0},
+  {title:"Благодарю Тебя Иисус",time:"0:04:18",sec:258},
+  {title:"Не бойся",time:"0:09:49",sec:589},
+  {title:"Спасибо Господи",time:"0:16:10",sec:970},
+  {title:"Благодарное сердце",time:"0:21:15",sec:1275},
+{title:"Проснись душа",time:"0:26:58",sec:1618},
+  {title:"Ты моё всё",time:"0:30:56",sec:1856},
+  {title:"Добрые слова",time:"0:38:00",sec:2280},
+  {title:"Учи меня",time:"0:43:50",sec:2630},
+  {title:"Библия",time:"0:48:50",sec:2930},
+  {title:"Моё желание",time:"0:53:27",sec:3207},
+  {title:"Осеннее",time:"0:57:35",sec:3455},
+  {title:"Сквозь туман",time:"1:01:48",sec:3708},
+  {title:"Без Христа",time:"1:05:16",sec:3916},
+  {title:"Кровь на Голгофе",time:"1:09:06",sec:4146}
+];
+
+const playlist=document.getElementById('playlist');
+const video=document.getElementById('videoPlayer');
+const playPauseBtn=document.getElementById('playPauseBtn');
+const prevBtn=document.getElementById('prevBtn');
+const nextBtn=document.getElementById('nextBtn');
+const progressBar=document.getElementById('progressBar');
+const progressFill=document.getElementById('progressFill');
+const currentTimeEl=document.getElementById('currentTime');
+const totalTimeEl=document.getElementById('totalTime');
+const volumeSlider=document.getElementById('volumeSlider');
+const volumeIcon=document.getElementById('volumeIcon');
+const currentTrackInfo=document.getElementById('currentTrackInfo');
+
+let currentTrack=0;
+let isPlaying=false;
+let isBuffering=false;
+
+video.addEventListener('waiting',()=>{
+  isBuffering=true;
+  playPauseBtn.textContent='⏳';
+});
+
+video.addEventListener('canplay',()=>{
+  isBuffering=false;
+  if(isPlaying){
+    playPauseBtn.textContent='⏸';
+  }
+});
+
+video.addEventListener('loadeddata',()=>{
+  isBuffering=false;
+});
+
+function formatTime(s){
+  const m=Math.floor(s/60);
+  const sec=Math.floor(s%60);
+  return m+':'+(sec<10?'0':'')+sec;
+}
+
+function getTrackDuration(index){
+  if(index<tracks.length-1){
+    return tracks[index+1].sec-tracks[index].sec;
+  }
+  return video.duration-tracks[index].sec;
+}
+
+function getTrackStartTime(index){
+  return tracks[index].sec;
+}
+
+function getTrackEndTime(index){
+  if(index<tracks.length-1){
+    return tracks[index+1].sec;
+  }
+  return video.duration;
+}
+
+function getCurrentTrackTime(){
+  return video.currentTime-getTrackStartTime(currentTrack);
+}
+
+tracks.forEach((t,i)=>{
+  playlist.innerHTML+=`
+    <div class="track" data-index="${i}">
+      <div class="track-number">${i+1}</div>
+      <div class="track-info">
+        <div class="track-title">${t.title}</div>
+        <div class="track-time">${t.time}</div>
+      </div>
+      <div class="track-duration">--:--</div>
+      <div class="playing-indicator">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </div>`;
+});
+
+document.querySelectorAll('.track').forEach(el=>{
+  el.addEventListener('click',function(){
+    const index=parseInt(this.dataset.index);
+    playTrack(index);
+  });
+});
+
+function playTrack(index){
+  currentTrack=index;
+  const targetTime=tracks[index].sec;
+  
+  if(Math.abs(video.currentTime-targetTime)>2){
+    video.currentTime=targetTime;
+  }
+  
+  play();
+  updateActiveTrack();
+  updateTrackInfo();
+  updateNavigationButtons();
+}
+
+function play(){
+  const playPromise=video.play();
+  
+  if(playPromise!==undefined){
+    playPromise.then(()=>{
+      isPlaying=true;
+      playPauseBtn.textContent='⏸';
+      updateActiveTrack();
+    }).catch(error=>{
+      console.log('Playback prevented:',error);
+      isPlaying=false;
+      playPauseBtn.textContent='▶';
+    });
+  }else{
+    isPlaying=true;
+    playPauseBtn.textContent='⏸';
+    updateActiveTrack();
+  }
+}
+
+function pause(){
+  video.pause();
+  isPlaying=false;
+  playPauseBtn.textContent='▶';
+  document.querySelectorAll('.track')[currentTrack]?.classList.add('paused');
+}
+
+function updateActiveTrack(){
+  document.querySelectorAll('.track').forEach((el,i)=>{
+    el.classList.remove('playing','paused');
+    if(i===currentTrack){
+      el.classList.add('playing');
+    }
+  });
+}
+
+function updateTrackInfo(){
+  const track=tracks[currentTrack];
+  currentTrackInfo.textContent=`${currentTrack+1}. ${track.title}`;
+}
+
+function updateNavigationButtons(){
+  prevBtn.disabled=currentTrack===0;
+  nextBtn.disabled=currentTrack===tracks.length-1;
+}
+
+playPauseBtn.addEventListener('click',()=>{
+  if(video.paused){
+    play();
+  }else{
+    pause();
+  }
+});
+
+prevBtn.addEventListener('click',()=>{
+  if(currentTrack>0){
+    playTrack(currentTrack-1);
+  }
+});
+
+nextBtn.addEventListener('click',()=>{
+  if(currentTrack<tracks.length-1){
+    playTrack(currentTrack+1);
+  }
+});
+
+video.addEventListener('click',()=>{
+  if(video.paused){
+    play();
+  }else{
+    pause();
+  }
+});
+
+video.addEventListener('timeupdate',()=>{
+  const trackStartTime=getTrackStartTime(currentTrack);
+  const trackEndTime=getTrackEndTime(currentTrack);
+  const trackDuration=trackEndTime-trackStartTime;
+  const currentTrackTime=video.currentTime-trackStartTime;
+  
+  const percent=(currentTrackTime/trackDuration)*100;
+  progressFill.style.width=Math.max(0,Math.min(100,percent))+'%';
+  
+  currentTimeEl.textContent=formatTime(currentTrackTime);
+  totalTimeEl.textContent=formatTime(trackDuration);
+  
+  if(currentTrack<tracks.length-1&&video.currentTime>=(tracks[currentTrack+1].sec-0.1)){
+    currentTrack++;
+    updateActiveTrack();
+    updateTrackInfo();
+    updateNavigationButtons();
+  }else{
+    for(let i=tracks.length-1;i>=0;i--){
+      if(video.currentTime>=(tracks[i].sec-0.1)){
+        if(currentTrack!==i){
+          currentTrack=i;
+          updateActiveTrack();
+          updateTrackInfo();
+          updateNavigationButtons();
+        }
+        break;
+      }
+    }
+  }
+});
+
+video.addEventListener('loadedmetadata',()=>{
+  document.querySelectorAll('.track').forEach((el,i)=>{
+    const duration=getTrackDuration(i);
+    const durationEl=el.querySelector('.track-duration');
+    if(durationEl){
+      durationEl.textContent=formatTime(duration);
+    }
+  });
+  
+  const trackDuration=getTrackDuration(currentTrack);
+  totalTimeEl.textContent=formatTime(trackDuration);
+});
+
+progressBar.addEventListener('click',(e)=>{
+  const rect=progressBar.getBoundingClientRect();
+  const pos=(e.clientX-rect.left)/rect.width;
+  
+  const trackStartTime=getTrackStartTime(currentTrack);
+  const trackEndTime=getTrackEndTime(currentTrack);
+  const trackDuration=trackEndTime-trackStartTime;
+  
+  const newTime=trackStartTime+(pos*trackDuration);
+  video.currentTime=Math.max(trackStartTime,Math.min(trackEndTime-0.1,newTime));
+});
+
+volumeSlider.addEventListener('input',function(){
+  video.volume=this.value/100;
+  updateVolumeIcon(this.value);
+});
+
+volumeIcon.addEventListener('click',()=>{
+  if(video.volume>0){
+    video.volume=0;
+    volumeSlider.value=0;
+  }else{
+    video.volume=0.8;
+    volumeSlider.value=80;
+  }
+  updateVolumeIcon(volumeSlider.value);
+});
+
+function updateVolumeIcon(v){
+  if(v==0)volumeIcon.textContent='🔇';
+  else if(v<33)volumeIcon.textContent='🔈';
+  else if(v<66)volumeIcon.textContent='🔉';
+  else volumeIcon.textContent='🔊';
+}
+
+video.volume=0.8;
+updateNavigationButtons();
+
+document.body.addEventListener('click',()=>{
+  video.muted=false;
+  if(video.paused)play();
+},{once:true});
+</script>
+</body>
+</html>
