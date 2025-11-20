@@ -16,7 +16,7 @@ body{
   padding-bottom:130px;
 }
 
-/* === Большая обложка как в video_player.html === */
+/* === Большая обложка === */
 .container{max-width:1200px;margin:0 auto;padding:20px}
 .album-section{text-align:center;margin-bottom:50px}
 .album-cover{
@@ -105,7 +105,7 @@ body{
 .bar:nth-child(5){height:10px;animation-delay:.4s}
 @keyframes soundWave{0%,100%{transform:scaleY(0.4)}50%{transform:scaleY(1)}}
 
-/* === НОВАЯ НИЖНЯЯ ПАНЕЛЬ — как в video_player.html === */
+/* === НОВАЯ НИЖНЯЯ ПАНЕЛЬ === */
 .player-controls-wrapper{
   position:fixed;
   bottom:0;left:0;right:0;
@@ -135,11 +135,19 @@ body{
   transition:all .3s;
 }
 .control-btn:hover{background:rgba(255,255,255,0.2);transform:scale(1.08)}
+
+/* === ИЗМЕНЕНИЕ: Добавлен border-radius 50% === */
 .play-btn{
   width:56px;height:56px;
   background:linear-gradient(45deg,#00d4ff,#ff006e);
   font-size:1.4em;
   box-shadow:0 5px 20px rgba(0,212,255,0.4);
+  border-radius: 50%; /* Сделали кнопку круглой */
+  border: none; /* Убрали стандартную рамку, если есть */
+  color: #fff;
+  cursor: pointer;
+  display:flex;align-items:center;justify-content:center; /* Центровка иконки */
+  transition:all .3s;
 }
 .play-btn:hover{transform:scale(1.1)}
 
@@ -222,7 +230,7 @@ body{
 <div class="container">
   <div class="album-section">
     <div class="album-cover">
-      <video class="album-video" id="albumVideo" src="online-video.mp4" muted loop playsinline></video>
+      <video class="album-video" id="albumVideo" src="12345.mp4" muted loop playsinline></video>
     </div>
     <div class="album-info">
       <h1 class="album-title">Моя Музыкальная Сборка</h1>
@@ -233,7 +241,6 @@ body{
   <div class="playlist" id="playlist"></div>
 </div>
 
-<!-- НОВАЯ ПАНЕЛЬ УПРАВЛЕНИЯ -->
 <div class="player-controls-wrapper">
   <div class="controls-content">
     <div class="control-btns">
@@ -324,7 +331,8 @@ function playTrack(i){
 
   audio.src = tracks[i].src;
   audio.play();
-  albumVideo.play();
+  // Видео запустится только здесь, при нажатии на трек
+  albumVideo.play(); 
   isPlaying = true;
   playPauseBtn.textContent = '⏸';
   document.querySelectorAll('.track')[i].classList.add('playing');
@@ -427,7 +435,7 @@ function updateVolumeIcon(v){
   else volumeIcon.textContent='🔊';
 }
 
-// Сохранение состояния в URL-хэше
+// Сохранение состояния
 function saveState(){
   const state = {
     track: currentTrack,
@@ -457,8 +465,8 @@ function loadState(){
       repeatMode = state.repeat || 0;
       shuffleMode = state.shuffle || false;
       audio.loop = repeatMode===1;
-      toggleRepeat(); // обновит кнопку
-      toggleShuffle(); // обновит кнопку
+      toggleRepeat(); 
+      toggleShuffle(); 
       document.querySelectorAll('.track')[currentTrack].classList.add('playing');
       if(state.playing){
         audio.play();
@@ -473,10 +481,10 @@ function loadState(){
 // Конец трека
 audio.addEventListener('ended',()=>{ if(repeatMode!==1) nextTrack(); });
 
-// Загрузка состояния при старте
+// Загрузка при старте
 window.addEventListener('load',()=>{
   loadState();
-  albumVideo.play().catch(()=>{});
+  // СТРОКУ albumVideo.play() УДАЛИЛИ - видео не запустится само
   updateVolumeIcon(volumeSlider.value);
 });
 </script>
