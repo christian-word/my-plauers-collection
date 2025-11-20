@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Христианская Музыка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            padding-bottom: 200px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .video-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .track-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .track-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .track-artist {
+            font-size: 16px;
+            color: #b0c4de;
+        }
+
+        .video-screen {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .playlist {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .playlist-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .playlist-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateX(5px);
+        }
+
+        .playlist-item.active {
+            background: linear-gradient(90deg, rgba(255,215,0,0.3), rgba(255,215,0,0.1));
+            border-left: 4px solid #ffd700;
+        }
+
+        .track-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+            min-width: 30px;
+        }
+
+        .track-details {
+            flex: 1;
+        }
+
+        .track-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .track-duration {
+            font-size: 12px;
+            color: #b0c4de;
+        }
+
+        .animation-badge {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .controls {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .progress-container {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #b0c4de;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            color: #ffd700;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-play {
+            width: 65px;
+            height: 65px;
+            font-size: 28px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1e3c72;
+            border: none;
+        }
+
+        .btn-play:hover {
+            transform: scale(1.15);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                padding-bottom: 180px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .video-screen {
+                height: 250px;
+            }
+
+            .controls {
+                padding: 15px;
+            }
+
+            .btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .btn-play {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✝ Христианская Музыка ✝</h1>
+        </div>
+
+        <div class="video-container">
+            <div class="track-info">
+                <div class="track-title" id="currentTitle">Выберите трек</div>
+                <div class="track-artist" id="currentArtist">Христианское прославление</div>
+            </div>
+            <div class="video-screen">
+                <canvas id="visualCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="playlist" id="playlist"></div>
+    </div>
+
+    <div class="controls">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="time-display">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn" id="prevBtn">⏮</button>
+            <button class="btn btn-play" id="playBtn">▶</button>
+            <button class="btn" id="nextBtn">⏭</button>
+        </div>
+
+        <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
+        </div>
+    </div>
+
+    <audio id="audio"></audio>
+
+    <script>
+        const playlist = [
+            { 
+                title: 'Благословен Господь', 
+                artist: 'Христианское прославление', 
+                duration: '4:23', 
+                file: 'track1.mp3',
+                animation: 'cross'
+            },
+            { 
+                title: 'Ты мой Бог', 
+                artist: 'Церковный хор', 
+                duration: '3:45', 
+                file: 'track2.mp3',
+                animation: 'waves'
+            },
+            { 
+                title: 'Иисус - мой спаситель', 
+                artist: 'Прославление', 
+                duration: '5:12', 
+                file: 'track3.mp3',
+                animation: 'particles'
+            },
+            { 
+                title: 'Святой, Святой', 
+                artist: 'Worship Team', 
+                duration: '4:56', 
+                file: 'track4.mp3',
+                animation: 'spiral'
+            },
+            { 
+                title: 'Благодать Твоя', 
+                artist: 'Христианская музыка', 
+                duration: '3:34', 
+                file: 'track5.mp3',
+                animation: 'hearts'
+            },
+            { 
+                title: 'Славлю Тебя', 
+                artist: 'Церковное служение', 
+                duration: '4:18', 
+                file: 'track6.mp3',
+                animation: 'stars'
+            }
+        ];
+
+        const animationNames = {
+            'cross': '✝️ Крест',
+            'waves': '🌊 Волны',
+            'particles': '✨ Частицы',
+            'spiral': '🌀 Спираль',
+            'hearts': '❤️ Сердца',
+            'stars': '⭐ Звёзды'
+        };
+
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const canvas = document.getElementById('visualCanvas');
+        const ctx = canvas.getContext('2d');
+        const currentTitle = document.getElementById('currentTitle');
+        const currentArtist = document.getElementById('currentArtist');
+        const playlistEl = document.getElementById('playlist');
+
+        let currentTrack = 0;
+        let isPlaying = false;
+        let animationFrame;
+        let time = 0;
+
+        // Настройка canvas
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Создание плейлиста
+        playlist.forEach((track, index) => {
+            const item = document.createElement('div');
+            item.className = 'playlist-item';
+            if (index === 0) item.classList.add('active');
+            item.innerHTML = `
+                <div class="track-number">${index + 1}</div>
+                <div class="track-details">
+                    <div class="track-name">${track.title}</div>
+                    <div class="track-duration">${track.artist} • ${track.duration}</div>
+                </div>
+                <div class="animation-badge">${animationNames[track.animation]}</div>
+            `;
+            item.onclick = () => loadTrack(index);
+            playlistEl.appendChild(item);
+        });
+
+        // Анимации для каждого трека
+        const animations = {
+            cross: function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, 200);
+                gradient.addColorStop(0, 'rgba(255, 215, 0, 0.3)');
+                gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.save();
+                ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.rotate(time * 0.3);
+                
+                ctx.fillStyle = '#ffd700';
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#ffd700';
+                
+                // Вертикальная линия креста
+                ctx.fillRect(-10, -80, 20, 160);
+                // Горизонтальная линия креста
+                ctx.fillRect(-60, -10, 120, 20);
+                
+                ctx.restore();
+                time += 0.02;
+            },
+
+            waves: function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for(let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(255, 215, 0, ${0.3 - i * 0.05})`;
+                    ctx.lineWidth = 3;
+                    
+                    for(let x = 0; x < canvas.width; x++) {
+                        const y = canvas.height/2 + Math.sin((x * 0.01) + time + i) * 30 * (i + 1);
+                        if(x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+                time += 0.05;
+            },
+
+            particles: function() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                for(let i = 0; i < 50; i++) {
+                    const x = canvas.width/2 + Math.cos(time + i * 0.5) * (100 + i * 3);
+                    const y = canvas.height/2 + Math.sin(time + i * 0.5) * (100 + i * 3);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 215, 0, ${0.8 - i * 0.01})`;
+                    ctx.fill();
+                }
+                time += 0.03;
+            },
+
+            spiral: function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.save();
+                ctx.translate(canvas.width/2, canvas.height/2);
+                
+                for(let i = 0; i < 100; i++) {
+                    const angle = i * 0.3 + time;
+                    const radius = i * 2;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 215, 0, ${1 - i * 0.01})`;
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+                time += 0.05;
+            },
+
+            hearts: function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for(let i = 0; i < 15; i++) {
+                    const x = (canvas.width/2) + Math.sin(time + i) * 100;
+                    const y = (canvas.height/2) + Math.cos(time * 1.5 + i) * 80;
+                    const size = 15 + Math.sin(time * 2 + i) * 5;
+                    
+                    drawHeart(x, y, size, `rgba(255, 215, 0, ${0.6})`);
+                }
+                time += 0.02;
+            },
+
+            stars: function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for(let i = 0; i < 30; i++) {
+                    const x = (canvas.width/2) + Math.cos(time * 0.5 + i * 0.5) * (50 + i * 5);
+                    const y = (canvas.height/2) + Math.sin(time * 0.5 + i * 0.5) * (50 + i * 5);
+                    const size = 10 + Math.sin(time * 2 + i) * 5;
+                    
+                    drawStar(x, y, 5, size, size/2, `rgba(255, 215, 0, ${0.8 - i * 0.02})`);
+                }
+                time += 0.03;
+            }
+        };
+
+        function drawHeart(x, y, size, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, size/4);
+            ctx.bezierCurveTo(-size/2, -size/4, -size, size/8, 0, size);
+            ctx.bezierCurveTo(size, size/8, size/2, -size/4, 0, size/4);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawStar(x, y, spikes, outerRadius, innerRadius, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            for(let i = 0; i < spikes * 2; i++) {
+                const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                const angle = (i * Math.PI) / spikes;
+                const sx = Math.cos(angle) * radius;
+                const sy = Math.sin(angle) * radius;
+                if(i === 0) ctx.moveTo(sx, sy);
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animate() {
+            if(!isPlaying) return;
+            
+            const currentAnimation = playlist[currentTrack].animation;
+            animations[currentAnimation]();
+            
+            animationFrame = requestAnimationFrame(animate);
+        }
+
+        function loadTrack(index) {
+            currentTrack = index;
+            const track = playlist[index];
+            
+            currentTitle.textContent = track.title;
+            currentArtist.textContent = track.artist;
+            
+            document.querySelectorAll('.playlist-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            time = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            playBtn.textContent = isPlaying ? '⏸' : '▶';
+            
+            if(isPlaying) {
+                animate();
+            } else {
+                cancelAnimationFrame(animationFrame);
+            }
+        }
+
+        playBtn.onclick = togglePlay;
+
+        prevBtn.onclick = () => {
+            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrack);
+        };
+
+        nextBtn.onclick = () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            loadTrack(currentTrack);
+        };
+
+        // Симуляция прогресса (для демо без аудио файлов)
+        let demoProgress = 0;
+        setInterval(() => {
+            if(isPlaying) {
+                demoProgress += 0.5;
+                if(demoProgress >= 100) {
+                    demoProgress = 0;
+                    nextBtn.click();
+                }
+                progress.style.width = demoProgress + '%';
+                
+                const currentSec = Math.floor((demoProgress / 100) * 240);
+                const durationSec = 240;
+                currentTimeEl.textContent = formatTime(currentSec);
+                durationEl.textContent = formatTime(durationSec);
+            }
+        }, 100);
+
+        progressBar.onclick = (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            demoProgress = ((e.clientX - rect.left) / rect.width) * 100;
+        };
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Загрузка первого трека
+        loadTrack(0);
+    </script>
+</body>
+</html>
