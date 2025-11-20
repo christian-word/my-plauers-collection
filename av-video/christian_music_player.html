@@ -16,13 +16,21 @@ body{
   padding-bottom:130px;
 }
 
-/* === Большая обложка === */
-.container{max-width:1200px;margin:0 auto;padding:20px}
-.album-section{text-align:center;margin-bottom:50px}
+/* === Контейнер === */
+.container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px;
+}
+
+/* === Обложка и Видео === */
+.album-section{text-align:center;margin-bottom:40px; position: relative;}
+.cover-placeholder { transition: height 0.3s; }
+
 .album-cover{
   width:800px;
   height:450px;
-  max-width:95vw;
+  max-width:100%;
   margin:0 auto;
   border-radius:20px;
   overflow:hidden;
@@ -30,6 +38,20 @@ body{
   background:linear-gradient(45deg,#00d299c2,#fef9d7,#99b9ff);
   animation:albumGlow 4s ease-in-out infinite alternate;
   position:relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 100;
+}
+.album-cover.pinned {
+  position: fixed;
+  bottom: 140px;
+  right: 20px;
+  width: 280px !important;
+  height: 158px !important;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+  border: 2px solid rgba(255,255,255,0.1);
+  animation: none;
+  z-index: 2000;
 }
 @keyframes albumGlow{
   0%{box-shadow:0 20px 60px rgba(0,212,255,0.3)}
@@ -37,191 +59,164 @@ body{
 }
 .album-video{width:100%;height:100%;object-fit:cover}
 
+.pin-btn {
+  position: absolute; top: 15px; right: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white; width: 35px; height: 35px;
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2em; opacity: 0;
+  transition: opacity 0.3s, transform 0.2s; z-index: 10;
+}
+.album-cover:hover .pin-btn, .album-cover.pinned .pin-btn { opacity: 1; }
+.pin-btn:hover { background: rgba(0, 212, 255, 0.8); transform: scale(1.1); }
+
 .album-info{margin-top:20px}
 .album-title{
-  font-size:2.8em;
-  font-weight:bold;
+  font-size:2.5em; font-weight:bold;
   background:linear-gradient(45deg,#00d4ff,#ff006e);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  padding: 0 10px;
 }
 
 /* === Плейлист === */
 .playlist{
   background:rgba(255,255,255,0.05);
-  border-radius:20px;
-  padding:30px;
+  border-radius:20px; padding:20px;
   backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,0.1);
 }
 .track{
-  display:flex;
-  align-items:center;
-  padding:15px;
-  margin-bottom:12px;
+  display:flex; align-items:center;
+  padding:12px 15px; margin-bottom:8px;
   background:rgba(255,255,255,0.03);
-  border-radius:15px;
-  cursor:pointer;
-  transition:all .3s ease;
-  position:relative;
+  border-radius:12px; cursor:pointer;
+  transition:all .2s ease; position:relative;
   overflow:hidden;
 }
-.track:hover{background:rgba(255,255,255,0.08);transform:translateX(8px)}
+.track:active{background:rgba(255,255,255,0.1);}
 .track.playing{
-  background:linear-gradient(90deg,rgba(0,212,255,0.2),rgba(255,0,110,0.2));
-  border:1px solid rgba(0,212,255,0.5);
+  background:linear-gradient(90deg,rgba(0,212,255,0.15),rgba(255,0,110,0.15));
+  border:1px solid rgba(0,212,255,0.4);
 }
 .track-number{
-  width:40px;height:40px;
+  width:32px; height:32px; flex-shrink: 0;
   background:rgba(255,255,255,0.1);
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  margin-right:20px;
-  font-weight:bold;
-  transition:all .3s;
+  margin-right:12px; font-size: 0.9em; font-weight:bold;
 }
 .track.playing .track-number{
   background:linear-gradient(45deg,#00d4ff,#ff006e);
   animation:pulse 1.5s ease-in-out infinite;
 }
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 
-.track-info{flex:1}
-.track-title{font-size:1.2em;margin-bottom:4px}
-.track-artist,.track-duration{color:rgba(255,255,255,0.6);font-size:.9em}
+/* === АНИМАЦИЯ ЭКВАЛАЙЗЕРА (ИСПРАВЛЕНО) === */
+.playing-indicator{display:none;margin-left:10px}
+.track.playing .playing-indicator{display:flex;align-items:flex-end;height:15px;gap:2px}
 
-.playing-indicator{display:none;margin-left:20px}
-.track.playing .playing-indicator{display:flex;align-items:flex-end;height:20px;gap:2px}
 .bar{
   width:3px;
   background:linear-gradient(to top,#00d4ff,#ff006e);
   border-radius:3px;
-  animation:soundWave .6s ease-in-out infinite;
+  /* Добавлена анимация */
+  animation: soundWave 0.8s ease-in-out infinite;
 }
-.bar:nth-child(1){height:8px;animation-delay:0s}
-.bar:nth-child(2){height:16px;animation-delay:.1s}
-.bar:nth-child(3){height:12px;animation-delay:.2s}
-.bar:nth-child(4){height:18px;animation-delay:.3s}
-.bar:nth-child(5){height:10px;animation-delay:.4s}
-@keyframes soundWave{0%,100%{transform:scaleY(0.4)}50%{transform:scaleY(1)}}
 
-/* === НОВАЯ НИЖНЯЯ ПАНЕЛЬ === */
+/* Разная скорость для каждого столбика */
+.bar:nth-child(1){height:6px; animation-duration: 0.6s;}
+.bar:nth-child(2){height:12px; animation-duration: 0.8s;}
+.bar:nth-child(3){height:8px; animation-duration: 1.1s;}
+
+/* Если трек на паузе (класс .paused), ставим анимацию на паузу */
+.track.paused .bar, .track.paused .track-number {
+  animation-play-state: paused !important;
+  opacity: 0.6;
+}
+
+/* Сами движения (было пропущено) */
+@keyframes soundWave {
+  0% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1.5); }
+  100% { transform: scaleY(0.5); }
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+.track-info{flex:1; min-width: 0; margin-right: 10px;}
+.track-title{font-size:1.1em; margin-bottom:3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.track-artist{color:rgba(255,255,255,0.6); font-size:.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.track-duration{color:rgba(255,255,255,0.6); font-size:.85em; flex-shrink: 0;}
+
+/* === Панель управления === */
 .player-controls-wrapper{
-  position:fixed;
-  bottom:0;left:0;right:0;
+  position:fixed; bottom:0;left:0;right:0;
   background:rgba(15,15,35,0.98);
   backdrop-filter:blur(20px);
   border-top:1px solid rgba(0,212,255,0.2);
-  padding:12px 20px;
-  z-index:1000;
+  padding:12px 20px; z-index:1000;
   box-shadow:0 -10px 40px rgba(0,0,0,0.4);
 }
 .controls-content{
-  max-width:1200px;
-  margin:0 auto;
-  display:flex;
-  align-items:center;
-  gap:15px;
+  max-width:1200px; margin:0 auto;
+  display:flex; align-items:center; gap:15px;
 }
 .control-btns{display:flex;gap:12px;flex-shrink:0}
 .control-btn{
-  width:42px;height:42px;
-  border-radius:50%;
+  width:42px;height:42px; border-radius:50%;
   background:rgba(255,255,255,0.1);
-  border:none;color:#fff;
-  cursor:pointer;
+  border:none;color:#fff; cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.1em;
-  transition:all .3s;
+  font-size:1.1em; transition:all .3s;
 }
-.control-btn:hover{background:rgba(255,255,255,0.2);transform:scale(1.08)}
-
-/* === ИЗМЕНЕНИЕ: Добавлен border-radius 50% === */
 .play-btn{
   width:56px;height:56px;
   background:linear-gradient(45deg,#00d4ff,#ff006e);
-  font-size:1.4em;
-  box-shadow:0 5px 20px rgba(0,212,255,0.4);
-  border-radius: 50%; /* Сделали кнопку круглой */
-  border: none; /* Убрали стандартную рамку, если есть */
-  color: #fff;
-  cursor: pointer;
-  display:flex;align-items:center;justify-content:center; /* Центровка иконки */
+  font-size:1.4em; box-shadow:0 5px 20px rgba(0,212,255,0.4);
+  border-radius: 50%; border: none; color: #fff;
+  cursor: pointer; display:flex;align-items:center;justify-content:center;
   transition:all .3s;
 }
-.play-btn:hover{transform:scale(1.1)}
-
 .progress-container{flex:1;min-width:0}
 .time-display{
-  display:flex;
-  justify-content:space-between;
-  color:rgba(255,255,255,0.5);
-  font-size:.85em;
-  margin-bottom:6px;
-  font-family:monospace;
+  display:flex;justify-content:space-between;
+  color:rgba(255,255,255,0.5);font-size:.85em;
+  margin-bottom:6px;font-family:monospace;
 }
 .progress-bar{
   width:100%;height:6px;
   background:rgba(255,255,255,0.1);
-  border-radius:3px;
-  cursor:pointer;
-  position:relative;
+  border-radius:3px; cursor:pointer;position:relative;
 }
 .progress{
-  height:100%;
-  background:linear-gradient(90deg,#00d4ff,#ff006e);
-  border-radius:3px;
-  width:0%;
-  transition:width .1s;
-  position:relative;
+  height:100%;background:linear-gradient(90deg,#00d4ff,#ff006e);
+  border-radius:3px;width:0%;
 }
-.progress::after{
-  content:'';
-  position:absolute;
-  right:0;top:50%;
-  transform:translateY(-50%);
-  width:14px;height:14px;
-  background:#fff;
-  border-radius:50%;
-  box-shadow:0 0 12px rgba(0,212,255,0.7);
-}
+.volume-control{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.volume-icon{font-size:1.2em;color:rgba(255,255,255,0.7)}
+.volume-slider{width:80px;height:5px;border-radius:3px;cursor:pointer}
 
-.volume-control{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-shrink:0;
-}
-.volume-icon{font-size:1.2em;color:rgba(255,255,255,0.7);cursor:pointer}
-.volume-slider{
-  width:100px;height:5px;
-  background:rgba(255,255,255,0.1);
-  border-radius:3px;
-  cursor:pointer;
-  -webkit-appearance:none;
-}
-.volume-slider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:14px;height:14px;
-  background:#fff;
-  border-radius:50%;
-  box-shadow:0 0 10px rgba(0,212,255,0.6);
-}
-
-/* === Адаптив === */
-@media (max-width:868px){
-  .album-cover{width:95vw;height:auto;aspect-ratio:16/9}
-  .album-title{font-size:2.2em}
-  .player-controls-wrapper{padding:10px}
-  .play-btn{width:50px;height:50px;font-size:1.3em}
-  .volume-slider{width:80px}
-}
-@media (max-width:480px){
-  .album-title{font-size:1.8em}
-  .control-btn{width:38px;height:38px}
-  .play-btn{width:48px;height:48px}
-  .volume-slider{width:60px}
-  .controls-content{gap:10px}
+/* === АДАПТИВ === */
+@media (max-width: 600px) {
+  .container { padding: 10px 5px; }
+  .playlist { padding: 10px 0; background: transparent; border: none; }
+  .album-cover { border-radius: 10px; height: auto; aspect-ratio: 16/9; }
+  .album-title { font-size: 1.6em; margin-bottom: 5px; }
+  .track { padding: 10px 5px; margin-bottom: 4px; border-radius: 8px; }
+  .track-number { width: 24px; height: 24px; font-size: 0.75em; margin-right: 8px; }
+  .track-title { font-size: 0.95em; }
+  .track-artist { font-size: 0.8em; }
+  .track-duration { font-size: 0.75em; }
+  .player-controls-wrapper { padding: 8px 10px; }
+  .play-btn { width: 48px; height: 48px; font-size: 1.2em; }
+  .control-btn { width: 36px; height: 36px; font-size: 1em; }
+  .volume-control { display: none; }
+  .controls-content { gap: 8px; }
+  .album-cover.pinned {
+    width: 140px !important; height: 80px !important;
+    bottom: 130px; right: 10px; border-width: 1px;
+  }
+  .pin-btn { opacity: 1; width: 30px; height: 30px; font-size: 1em; }
 }
 </style>
 </head>
@@ -229,15 +224,17 @@ body{
 
 <div class="container">
   <div class="album-section">
-    <div class="album-cover">
-      <video class="album-video" id="albumVideo" src="online-video.mp4" muted loop playsinline></video>
+    <div class="cover-placeholder" id="coverPlaceholder">
+      <div class="album-cover" id="albumCover">
+        <button class="pin-btn" id="pinBtn" onclick="togglePin()" title="Закрепить плеер">📌</button>
+        <video class="album-video" id="albumVideo" src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" muted loop playsinline></video>
+      </div>
     </div>
     <div class="album-info">
       <h1 class="album-title">Моя Музыкальная Сборка</h1>
-      <p>Создано специально для вас ♡</p>
+      <p style="font-size: 0.9em; opacity: 0.7;">Создано специально для вас ♡</p>
     </div>
   </div>
-
   <div class="playlist" id="playlist"></div>
 </div>
 
@@ -248,7 +245,6 @@ body{
       <button class="play-btn" id="playPauseBtn" onclick="togglePlay()">▶</button>
       <button class="control-btn" onclick="nextTrack()">⏭</button>
     </div>
-
     <div class="progress-container">
       <div class="time-display">
         <span id="currentTime">0:00</span>
@@ -258,13 +254,11 @@ body{
         <div class="progress" id="progressFill"></div>
       </div>
     </div>
-
     <div class="volume-control">
       <span class="volume-icon" id="volumeIcon">🔊</span>
       <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
     </div>
-
-    <div style="display:flex;gap:10px;">
+    <div style="display:flex;gap:5px;">
       <button class="control-btn" id="repeatBtn" onclick="toggleRepeat()">🔁</button>
       <button class="control-btn" id="shuffleBtn" onclick="toggleShuffle()">🔀</button>
     </div>
@@ -275,17 +269,17 @@ body{
 
 <script>
 const tracks = [
-  {title:"track1.mp3",artist:"Артист 1",src:"track1.mp3",duration:"2:18"},
-  {title:"Осень в платье пышном",artist:"Артист 2",src:"Осень_в_платье_пышном.mp3",duration:"4:12"},
-  {title:"Снова жёлтой листвой покрылась_земля(2)",artist:"Артист 3",src:"Снова_жёлтой_листвой_покрылась_земля(2).mp3",duration:"3:25"},
-  {title:"Уже не лето но ещё не осень(2)",artist:"Артист 4",src:"Уже_не_лето_но_ещё_не_осень(2).mp3",duration:"2:18"},
-  {title:"Смотри как осень краски щедро льёт",artist:"Артист 5",src:"Смотри_как_осень_краски_щедро_льёт.mp3",duration:"3:45"},
-  {title:"Вот опять наступила осень",artist:"Артист 6",src:"Вот_опять_наступила_осень.mp3",duration:"4:12"},
-  {title:"Жёлтые листья медленно кружат",artist:"Артист 7",src:"Жёлтые_листья_медленно_кружат.mp3",duration:"5:30"},
-  {title:"Одна листва",artist:"Артист 8",src:"Одна_листва.mp3",duration:"3:45"},
-  {title:"Снова жёлтой листвой покрылась земля",artist:"Артист 9",src:"Снова_жёлтой_листвой_покрылась_земля.mp3",duration:"2:30"},
-  {title:"Снова осень пришла",artist:"Артист 10",src:"Снова_осень_пришла.mp3",duration:"3:25"},
-  {title:"Вот опять наступила осень(2)",artist:"Артист 11",src:"Вот_опять_наступила_осень(2).mp3",duration:"3:40"}
+  {title:"track1",artist:"Артист 1",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",duration:"6:12"},
+  {title:"Осень в платье пышном",artist:"Артист 2",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",duration:"7:05"},
+  {title:"Снова жёлтой листвой покрылась земля(2)",artist:"Артист 3",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",duration:"5:44"},
+  {title:"Уже не лето но ещё не осень(2)",artist:"Артист 4",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",duration:"5:02"},
+  {title:"Смотри как осень краски щедро льёт",artist:"Артист 5",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",duration:"5:53"},
+  {title:"Вот опять наступила осень",artist:"Артист 6",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",duration:"4:12"},
+  {title:"Жёлтые листья медленно кружат",artist:"Артист 7",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",duration:"5:30"},
+  {title:"Одна листва",artist:"Артист 8",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",duration:"3:45"},
+  {title:"Снова жёлтой листвой покрылась земля",artist:"Артист 9",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",duration:"2:30"},
+  {title:"Снова осень пришла",artist:"Артист 10",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",duration:"3:25"},
+  {title:"Вот опять наступила осень(2)",artist:"Артист 11",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3",duration:"3:40"}
 ];
 
 const playlist = document.getElementById('playlist');
@@ -300,14 +294,17 @@ const volumeSlider = document.getElementById('volumeSlider');
 const volumeIcon = document.getElementById('volumeIcon');
 const repeatBtn = document.getElementById('repeatBtn');
 const shuffleBtn = document.getElementById('shuffleBtn');
+const albumCover = document.getElementById('albumCover');
+const coverPlaceholder = document.getElementById('coverPlaceholder');
+const pinBtn = document.getElementById('pinBtn');
 
 let currentTrack = null;
 let isPlaying = false;
-let repeatMode = 0; // 0-off, 1-track, 2-all
+let repeatMode = 0;
 let shuffleMode = false;
 let playHistory = [];
+let isPinned = false;
 
-// Заполнение плейлиста
 tracks.forEach((t,i) => {
   playlist.innerHTML += `
     <div class="track" onclick="playTrack(${i})">
@@ -318,41 +315,74 @@ tracks.forEach((t,i) => {
       </div>
       <div class="track-duration">${t.duration}</div>
       <div class="playing-indicator">
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
       </div>
     </div>`;
 });
 
+function togglePin() {
+  isPinned = !isPinned;
+  if (isPinned) {
+    coverPlaceholder.style.height = albumCover.offsetHeight + 'px';
+    albumCover.classList.add('pinned');
+    pinBtn.textContent = '↙';
+    pinBtn.title = "Вернуть на место";
+  } else {
+    albumCover.classList.remove('pinned');
+    setTimeout(() => { coverPlaceholder.style.height = 'auto'; }, 400);
+    pinBtn.textContent = '📌';
+    pinBtn.title = "Закрепить плеер";
+  }
+}
+
 function playTrack(i){
-  document.querySelectorAll('.track').forEach(el=>el.classList.remove('playing','paused'));
+  document.querySelectorAll('.track').forEach(el=>{
+    el.classList.remove('playing','paused');
+  });
+  
   currentTrack = i;
   playHistory.push(i);
   if(playHistory.length>20) playHistory.shift();
 
   audio.src = tracks[i].src;
-  audio.play();
-  // Видео запустится только здесь, при нажатии на трек
-  albumVideo.play(); 
-  isPlaying = true;
-  playPauseBtn.textContent = '⏸';
-  document.querySelectorAll('.track')[i].classList.add('playing');
-  saveState();
+  
+  const playPromise = audio.play();
+  if (playPromise !== undefined) {
+    playPromise.then(_ => {
+      albumVideo.play().catch(e => {}); 
+      isPlaying = true;
+      playPauseBtn.textContent = '⏸';
+      const trackEl = document.querySelectorAll('.track')[i];
+      trackEl.classList.add('playing');
+      trackEl.classList.remove('paused'); // Убеждаемся что паузы нет
+      saveState();
+    }).catch(error => {
+      isPlaying = false;
+      playPauseBtn.textContent = '▶';
+    });
+  }
 }
 
 function togglePlay(){
   if(currentTrack===null){ playTrack(0); return; }
+  const trackEl = document.querySelectorAll('.track')[currentTrack];
+  
   if(isPlaying){
     audio.pause();
     albumVideo.pause();
     isPlaying = false;
     playPauseBtn.textContent = '▶';
-    document.querySelectorAll('.track')[currentTrack]?.classList.add('paused');
+    if(trackEl) trackEl.classList.add('paused'); // Добавляем класс паузы
   }else{
-    audio.play();
-    albumVideo.play();
-    isPlaying = true;
-    playPauseBtn.textContent = '⏸';
-    document.querySelectorAll('.track')[currentTrack]?.classList.remove('paused');
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(_ => {
+        albumVideo.play().catch(e=>{});
+        isPlaying = true;
+        playPauseBtn.textContent = '⏸';
+        if(trackEl) trackEl.classList.remove('paused'); // Убираем класс паузы
+      }).catch(e => {});
+    }
   }
 }
 
@@ -366,7 +396,12 @@ function nextTrack(){
     next = currentTrack + 1;
     if(next >= tracks.length){
       next = (repeatMode===2) ? 0 : currentTrack;
-      if(repeatMode!==2){ isPlaying=false; playPauseBtn.textContent='▶'; return; }
+      if(repeatMode!==2){ 
+        isPlaying=false; 
+        playPauseBtn.textContent='▶'; 
+        document.querySelectorAll('.track')[currentTrack]?.classList.add('paused');
+        return; 
+      }
     }
   }
   playTrack(next);
@@ -386,9 +421,9 @@ function previousTrack(){
 
 function toggleRepeat(){
   repeatMode = (repeatMode+1)%3;
-  const txt = ['Выкл','Трек','Все'];
+  const icons = ['🔁', '🔂', '🔁All'];
   repeatBtn.style.background = repeatMode>0 ? 'linear-gradient(45deg,#00d4ff,#ff006e)' : '';
-  repeatBtn.textContent = '🔁'+txt[repeatMode];
+  repeatBtn.textContent = icons[repeatMode];
   audio.loop = repeatMode===1;
   saveState();
 }
@@ -406,7 +441,6 @@ function formatTime(s){
   return `${m}:${sec<10?'0':''}${sec}`;
 }
 
-// Прогресс
 audio.addEventListener('timeupdate',()=>{
   if(audio.duration){
     const percent = (audio.currentTime / audio.duration) * 100;
@@ -422,8 +456,6 @@ progressBar.addEventListener('click',(e)=>{
   const pos = (e.clientX - rect.left) / rect.width;
   audio.currentTime = pos * audio.duration;
 });
-
-// Громкость
 volumeSlider.addEventListener('input',()=>{
   audio.volume = volumeSlider.value/100;
   updateVolumeIcon(volumeSlider.value);
@@ -435,7 +467,6 @@ function updateVolumeIcon(v){
   else volumeIcon.textContent='🔊';
 }
 
-// Сохранение состояния
 function saveState(){
   const state = {
     track: currentTrack,
@@ -465,26 +496,16 @@ function loadState(){
       repeatMode = state.repeat || 0;
       shuffleMode = state.shuffle || false;
       audio.loop = repeatMode===1;
-      toggleRepeat(); 
-      toggleShuffle(); 
-      document.querySelectorAll('.track')[currentTrack].classList.add('playing');
-      if(state.playing){
-        audio.play();
-        albumVideo.play();
-        isPlaying = true;
-        playPauseBtn.textContent = '⏸';
-      }
+      toggleRepeat();
+      toggleShuffle();
     }
   }catch(e){}
 }
 
-// Конец трека
 audio.addEventListener('ended',()=>{ if(repeatMode!==1) nextTrack(); });
 
-// Загрузка при старте
 window.addEventListener('load',()=>{
   loadState();
-  // СТРОКУ albumVideo.play() УДАЛИЛИ - видео не запустится само
   updateVolumeIcon(volumeSlider.value);
 });
 </script>
