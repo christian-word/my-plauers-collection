@@ -16,7 +16,7 @@ body{
   overflow-x:hidden;
   padding-bottom:130px;
   /* Додаємо відступ зверху, щоб плейлист не ховався під закріпленим плеєром */
-  padding-top: 500px; /* Висота плеєра + info + невеликий відступ */
+  padding-top: 500px; /* Висота плеєра + info + невеликий відступ для десктопу */
 }
 
 /* === Контейнер === */
@@ -37,7 +37,7 @@ body{
   z-index: 1500; 
   background:linear-gradient(180deg, rgba(15,15,35,1) 0%, rgba(15,15,35,0.95) 90%, rgba(15,15,35,0) 100%);
   padding-bottom: 20px; 
-  transition: transform 0.4s ease-in-out; /* Додано для плавності приховування */
+  transition: transform 0.4s ease-in-out; 
 }
 
 .cover-placeholder { 
@@ -244,7 +244,8 @@ body{
     padding-bottom: 10px;
     background:linear-gradient(180deg, rgba(15,15,35,1) 0%, rgba(15,15,35,0.95) 90%, rgba(15,15,35,0) 100%);
   }
-  body { padding-top: 200px; } 
+  /* ВИПРАВЛЕННЯ: Збільшено відступ, щоб перший трек був повністю видимий */
+  body { padding-top: 250px; } 
   .album-cover { 
     width: 95vw; 
     height: auto; 
@@ -273,7 +274,7 @@ body{
   <div class="album-section">
     <div class="album-cover" id="albumCover">
       <button class="pin-btn" id="pinBtn" onclick="toggleVisibility()" title="Сховати плеєр">⬇</button> 
-      <video class="album-video" id="albumVideo" src="video.mp4" poster="ico1.jpg" muted loop playsinline></video>
+      <video class="album-video" id="albumVideo" src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" poster="ico1.jpg" muted loop playsinline></video>
     </div>
     <div class="album-info">
       <h1 class="album-title">Музична Збірка</h1>
@@ -350,7 +351,7 @@ let isPlaying = false;
 let repeatMode = 0; // 0=Off, 1=Single, 2=All
 let shuffleMode = false;
 let playHistory = [];
-let isVisible = true; // Новий прапор для видимості
+let isVisible = true; 
 let lastTimeUpdate = 0; 
 
 // Генерація плейлиста
