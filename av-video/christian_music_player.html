@@ -12,9 +12,9 @@ body{
   font-family:'Arial',sans-serif;
   background:linear-gradient(135deg,#0f0f23 0%,#1a1a2e 50%,#16213e 100%);
   color:#fff;
-  min-height:200vh; /* Збільшив для демонстрації прокрутки */
+  min-height:100vh;
   overflow-x:hidden;
-  padding-bottom:130px;
+  padding-bottom:100px;
   /* Додаємо відступ зверху, щоб плейлист не ховався під закріпленим плеєром */
   padding-top: 500px; /* Висота плеєра + info + невеликий відступ для десктопу */
 }
@@ -244,7 +244,6 @@ body{
     padding-bottom: 10px;
     background:linear-gradient(180deg, rgba(15,15,35,1) 0%, rgba(15,15,35,0.95) 90%, rgba(15,15,35,0) 100%);
   }
-  /* ВИПРАВЛЕННЯ: Збільшено відступ, щоб перший трек був повністю видимий */
   body { padding-top: 250px; } 
   .album-cover { 
     width: 95vw; 
@@ -265,6 +264,11 @@ body{
   .volume-control { display: none; }
   .controls-content { gap: 8px; }
   .pin-btn { opacity: 1; width: 30px; height: 30px; font-size: 1em; }
+}
+
+/* НОВЕ: Клас для фіксації першого треку вгорі, коли плеєр схований */
+body.player-hidden {
+    padding-top: 20px !important; 
 }
 </style>
 </head>
@@ -345,6 +349,7 @@ const shuffleBtn = document.getElementById('shuffleBtn');
 const albumCover = document.getElementById('albumCover');
 const pinBtn = document.getElementById('pinBtn');
 const albumSection = document.querySelector('.album-section'); 
+const body = document.body; // Отримали посилання на <body>
 
 let currentTrack = null;
 let isPlaying = false;
@@ -370,13 +375,14 @@ const playlistHTML = tracks.map((t,i) => `
 playlist.innerHTML = playlistHTML;
 
 
-// --- PINNING LOGIC (Оновлено на toggleVisibility) ---
+// --- PINNING LOGIC (Оновлено для керування body padding) ---
 function toggleVisibility() {
   isVisible = !isVisible;
   if (isVisible) {
     albumSection.style.transform = 'translateY(0)';
     pinBtn.textContent = '⬇';
     pinBtn.title = "Сховати плеєр";
+    body.classList.remove('player-hidden'); // ВИДАЛЯЄМО: Відновлюємо великий padding-top
   } else {
     // Обчислюємо, наскільки високо потрібно сховати елемент (повна висота)
     const heightToHide = albumSection.offsetHeight + 'px'; 
@@ -384,6 +390,7 @@ function toggleVisibility() {
     albumSection.style.transform = `translateY(calc(-${heightToHide} + 15px))`; 
     pinBtn.textContent = '⬆';
     pinBtn.title = "Показати плеєр";
+    body.classList.add('player-hidden'); // ДОДАЄМО: Зменшуємо padding-top до мінімуму
   }
 }
 
@@ -627,9 +634,14 @@ window.addEventListener('load',()=>{
   if (isVisible) {
       pinBtn.textContent = '⬇';
       pinBtn.title = "Сховати плеєр";
+      body.classList.remove('player-hidden');
   } else {
       pinBtn.textContent = '⬆';
       pinBtn.title = "Показати плеєр";
+      // Якщо стан завантажено як схований, застосовуємо клас
+      if (!isVisible) {
+          body.classList.add('player-hidden');
+      }
   }
 });
 </script>
