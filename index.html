@@ -1,11 +1,11 @@
 ﻿<!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="https://christian-word.github.io/my-plauers-collection/ico.jpg">
 
-    <title>Христианские Альбомы</title>
+    <title>Християнські Альбоми</title>
     <style>
         :root {
             --space: #0a0e17;
@@ -13,12 +13,20 @@
             --neon-pink: #ff00f7;
             --neon-green: #00ff9d;
             --neon-yellow: #fff700;
+            
+            /* Білий неон */
+            --neon-white: #ffffff;
+            
             --text: #e0f7fa;
             --card-bg: rgba(16, 42, 66, 0.3);
+            
             --glow-blue: 0 0 20px rgba(0, 247, 255, 0.7);
             --glow-pink: 0 0 20px rgba(255, 0, 247, 0.5);
             --glow-green: 0 0 20px rgba(0, 255, 157, 0.5);
             --glow-yellow: 0 0 20px rgba(255, 247, 0, 0.5);
+            
+            /* Світіння для білого (дуже яскраве) */
+            --glow-white: 0 0 25px rgba(255, 255, 255, 0.9);
         }
         
         * {
@@ -116,6 +124,12 @@
             border-color: rgba(255, 247, 0, 0.3);
         }
         
+        /* Стиль для БІЛОГО альбому */
+        .teleport-card.ai-white {
+            --glow: var(--glow-white);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+        
         .teleport-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), var(--glow);
@@ -162,7 +176,7 @@
             letter-spacing: 1px;
         }
         
-        /* Стили для футера */
+        /* Стилі для футера */
         footer {
             background: linear-gradient(to top, rgba(10, 14, 23, 0.9), transparent);
             color: var(--neon-blue);
@@ -240,47 +254,54 @@
     
     <div class="teleport-container">
         <header>
-            <h1>Христианские Альбомы</h1>
-            <p class="subtitle">Коллекция христианской музыки в современном звучании</p>     
+            <h1>Християнські Альбоми</h1>
+            <p class="subtitle">Колекція християнської музики у сучасному звучанні</p>     
        </header>
         
         <div class="teleport-grid">
+
+            <a href="https://christian-word.github.io/GospelVoice/Video/adaptive-video-player.html" class="teleport-card ai-white" style="color: var(--neon-white);">
+                <img src="https://christian-word.github.io/GospelVoice/Video/img2.JPG" alt="New Album" class="icon-holo">
+                <div class="app-title">Збірка відео та фотоколаж</div>
+                <div class="app-desc">Дім Євангелія м. Суми</div>               
+                <span class="ai-badge" style="background: #ffffff; color: #0a0e17; box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);">NEW</span>
+            </a>
+
             <a href="https://christian-word.github.io/my-plauers-collection/av-video/christian_music_player.html" class="teleport-card ai-med" style="color: var(--neon-blue);">
             <img src="https://christian-word.github.io/my-plauers-collection/av-video/icon.jpg" alt="Worship Album" class="icon-holo">
-                <div class="app-title">Христианский альбом Bible Music</div>
-                <div class="app-desc">Музыка, несущая покой, вдохновение и возвышение.</div>
+                <div class="app-title">Християнський альбом Bible Music</div>
+                <div class="app-desc">Музика, що несе спокій, натхнення та піднесення</div>
                 <span class="ai-badge">WORSHIP</span>
             </a>
             
             <a href="https://christian-word.github.io/my-plauers-collection/video_player/video_player.html" class="teleport-card ai-cook" style="color: var(--neon-pink);">
                 <img src="https://christian-word.github.io/my-plauers-collection/video_player/ico.jpg" alt="Gospel Album" class="icon-holo">
-                <div class="app-title">Музыкальная видео сборка</div>
-                <div class="app-desc">Энергичные ритмы и радостные гимны, наполняющие сердце надеждой</div>
-                <span class="ai-badge">Видео</span>
+                <div class="app-title">Музична відеозбірка</div>
+                <div class="app-desc">Енергійні ритми та радісні гімни, що наповнюють серце надією</div>
+                <span class="ai-badge">ВІДЕО</span>
             </a>
           
              <a href="https://christian-word.github.io/my-plauers-collection/autumn/plauer2.html" class="teleport-card map" style="color: var(--neon-yellow);">
                 <img src="https://christian-word.github.io/my-plauers-collection/autumn/ico1.jpg" alt="Hymns" class="icon-holo">
-                <div class="app-title">Осення коллекция христианской музыки</div>
-                <div class="app-desc">Музыка создана с помощи музыкального редактора AI</div>
+                <div class="app-title">Осіння колекція християнської музики</div>
+                <div class="app-desc">Музика створена за допомогою музичного редактора AI</div>
             </a>
  
             <a href="https://christian-word.github.io/gospel-audio/audio.html" class="teleport-card weather" style="color: var(--neon-green);">
                 <img src="https://christian-word.github.io/gospel-audio/ico/kliuch_myz.jpg" alt="Instrumental" class="icon-holo">
-                <div class="app-title">Инструментальная музыка</div>
-                <div class="app-desc">Золотая классика христианской музыки в современной аранжировке</div>
+                <div class="app-title">Інструментальна музика</div>
+                <div class="app-desc">Золота класика християнської музики в сучасному аранжуванні</div>
             </a>
           
         </div>
     </div>
 
     <footer>
-        Музыкальная коллекция Церква "Дім Євангелія" 
-      м. Суми, пров. Іоанна Хрестителя, 14, © г.Сумы 2025
+        Музична колекція Церква "Дім Євангелія" 
+      м. Суми, пров. Іоанна Хрестителя, 14, © м. Суми 2025
     </footer>
 
     <script>
-        // Звёздное поле на Canvas
         document.addEventListener('DOMContentLoaded', () => {
             const canvas = document.createElement('canvas');
             const starsContainer = document.getElementById('stars');
