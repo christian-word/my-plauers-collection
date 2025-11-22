@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="https://christian-word.github.io/my-plauers-collection/ico.jpg">
+
+    <title>Христианские Альбомы</title>
+    <style>
+        :root {
+            --space: #0a0e17;
+            --neon-blue: #00f7ff;
+            --neon-pink: #ff00f7;
+            --neon-green: #00ff9d;
+            --neon-yellow: #fff700;
+            --text: #e0f7fa;
+            --card-bg: rgba(16, 42, 66, 0.3);
+            --glow-blue: 0 0 20px rgba(0, 247, 255, 0.7);
+            --glow-pink: 0 0 20px rgba(255, 0, 247, 0.5);
+            --glow-green: 0 0 20px rgba(0, 255, 157, 0.5);
+            --glow-yellow: 0 0 20px rgba(255, 247, 0, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--space);
+            color: var(--text);
+            min-height: 100vh;
+            font-family: 'Orbitron', 'Rajdhani', sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .teleport-container {
+            width: 100%;
+            max-width: 1400px;
+            padding: 40px 20px;
+            margin: 0 auto;
+            flex: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+        
+        .teleport-grid {
+            display: grid;
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .teleport-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 35px 30px;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid;
+        }
+        
+        .teleport-card.ai-med {
+            --glow: var(--glow-blue);
+            border-color: rgba(0, 247, 255, 0.3);
+        }
+        .teleport-card.ai-cook {
+            --glow: var(--glow-pink);
+            border-color: rgba(255, 0, 247, 0.3);
+        }
+        .teleport-card.weather {
+            --glow: var(--glow-green);
+            border-color: rgba(0, 255, 157, 0.3);
+        }
+        .teleport-card.map {
+            --glow: var(--glow-yellow);
+            border-color: rgba(255, 247, 0, 0.3);
+        }
+        
+        .teleport-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), var(--glow);
+        }
+        
+        .icon-holo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 25px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px currentColor);
+            transition: transform 0.5s;
+        }
+        
+        .teleport-card:hover .icon-holo {
+            transform: scale(1.15);
+        }
+        
+        .app-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .app-desc {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .ai-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            color: var(--space);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(0, 255, 191, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Стили для футера */
+        footer {
+            background: linear-gradient(to top, rgba(10, 14, 23, 0.9), transparent);
+            color: var(--neon-blue);
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 247, 255, 0.7);
+            border-top: 1px solid rgba(0, 247, 255, 0.3);
+            animation: footerGlow 3s infinite alternate;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.1), transparent);
+            animation: scanline 8s linear infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes footerGlow {
+            0% { text-shadow: 0 0 10px rgba(0, 247, 255, 0.7); }
+            100% { text-shadow: 0 0 15px rgba(0, 247, 255, 0.9), 
+                           0 0 20px rgba(0, 247, 255, 0.5); }
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @media (min-width: 1200px) {
+            .teleport-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .teleport-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .teleport-grid {
+                grid-template-columns: 1fr;
+            }
+            .icon-holo {
+                width: 80px;
+                height: 80px;
+            }
+            footer {
+                font-size: 0.9rem;
+                padding: 15px 10px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="teleport-container">
+        <header>
+            <h1>Христианские Альбомы</h1>
+            <p class="subtitle">Коллекция христианской музыки в современном звучании</p>
+            <p class="subtitle">Создана для Церква "Дім Євангелія" м. Суми, пров. Іоанна Хрестителя, 14</p>        
+       </header>
+        
+        <div class="teleport-grid">
+            <a href="https://christian-word.github.io/my-plauers-collection/av-video/christian_music_player.html" class="teleport-card ai-med" style="color: var(--neon-blue);">
+            <img src="https://christian-word.github.io/my-plauers-collection/av-video/icon.jpg" alt="Worship Album" class="icon-holo">
+                <div class="app-title">Христианский альбом</div>
+                <div class="app-desc">Погружение в атмосферу хвалы и молитвы с вдохновляющими текстами</div>
+                <span class="ai-badge">WORSHIP</span>
+            </a>
+            
+            <a href="https://christian-word.github.io/my-plauers-collection/video_player/video_player.html" class="teleport-card ai-cook" style="color: var(--neon-pink);">
+                <img src="https://christian-word.github.io/my-plauers-collection/video_player/ico.jpg" alt="Gospel Album" class="icon-holo">
+                <div class="app-title">Музыкальная видео сборка</div>
+                <div class="app-desc">Энергичные ритмы и радостные гимны, наполняющие сердце надеждой</div>
+                <span class="ai-badge">Видео</span>
+            </a>
+          
+             <a href="https://christian-word.github.io/my-plauers-collection/autumn/plauer2.html" class="teleport-card map" style="color: var(--neon-yellow);">
+                <img src="https://christian-word.github.io/my-plauers-collection/autumn/ico1.jpg" alt="Hymns" class="icon-holo">
+                <div class="app-title">Осення коллекция христианской музыки</div>
+                <div class="app-desc">Музыка создана с помощи музыкального редактора AI</div>
+            </a>
+ 
+            <a href="https://christian-word.github.io/gospel-audio/audio.html" class="teleport-card weather" style="color: var(--neon-green);">
+                <img src="https://christian-word.github.io/gospel-audio/ico/kliuch_myz.jpg" alt="Instrumental" class="icon-holo">
+                <div class="app-title">Инструментальная музыка</div>
+                <div class="app-desc">Золотая классика христианской музыки в современной аранжировке</div>
+            </a>
+          
+        </div>
+    </div>
+
+    <footer>
+        Музыкальная коллекция версия (1.0), © г.Сумы 2025
+    </footer>
+
+    <script>
+        // Звёздное поле на Canvas
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.createElement('canvas');
+            const starsContainer = document.getElementById('stars');
+            starsContainer.appendChild(canvas);
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+            const stars = [];
+            
+            for (let i = 0; i < 500; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5,
+                    speed: Math.random() * 0.2
+                });
+            }
+            
+            function animateStars() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                
+                stars.forEach(star => {
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    star.y += star.speed;
+                    if (star.y > canvas.height) star.y = 0;
+                });
+                
+                requestAnimationFrame(animateStars);
+            }
+            
+            animateStars();
+        });
+    </script>
+</body>
+</html>
